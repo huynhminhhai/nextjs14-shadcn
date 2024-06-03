@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import localFont from 'next/font/local'
+import { ThemeProvider } from '@/components/theme-provider'
+import Header from '@/components/header'
 
 export const metadata: Metadata = {
   title: 'Next 14 - ShadCn UI',
@@ -38,14 +40,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <head>
         <link rel='preconnect' href='https://fonts.googleapis.com' />
         <link rel='preconnect' href='https://fonts.gstatic.com' />
         <link rel='icon' href='https://avatarfiles.alphacoders.com/300/thumb-1920-300266.png' sizes='any' />
         <link href='https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap' rel='stylesheet' />
       </head>
-      <body className={myFont.className}>{children}</body>
+      <body className={myFont.className}>
+        <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+          <Header />
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
