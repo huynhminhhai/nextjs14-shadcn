@@ -4,6 +4,7 @@ import localFont from 'next/font/local'
 import { ThemeProvider } from '@/components/theme-provider'
 import Header from '@/components/header'
 import { Toaster } from '@/components/ui/toaster'
+import { ReduxProvider } from '@/lib/store/Provider'
 
 export const metadata: Metadata = {
   title: 'Next 14 - ShadCn UI',
@@ -49,11 +50,13 @@ export default function RootLayout({
         <link href='https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap' rel='stylesheet' />
       </head>
       <body className={myFont.className}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-          <Toaster />
-          <Header />
-          <div className='px-12'>{children}</div>
-        </ThemeProvider>
+        <ReduxProvider>
+          <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+            <Toaster />
+            <Header />
+            <div className='px-12'>{children}</div>
+          </ThemeProvider>
+        </ReduxProvider>
       </body>
     </html>
   )
