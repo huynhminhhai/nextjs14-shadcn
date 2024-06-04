@@ -1,14 +1,13 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { RegisterBody, RegisterBodyType, RegisterResType } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
-import { useRegisterMutation } from '@/lib/store/services/api/auth.api'
-import { compareObject } from '@/lib/utils'
+import envConfig from '@/config'
 
 const initalRegisterBody = {
   name: '',
@@ -19,8 +18,6 @@ const initalRegisterBody = {
 
 const RegisterForm = () => {
   const { toast } = useToast()
-  const [register, { isLoading }] = useRegisterMutation()
-  const [registerBody, setRegisterBody] = useState<RegisterBodyType>(initalRegisterBody)
 
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
@@ -29,32 +26,30 @@ const RegisterForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: RegisterBodyType) {
-    setRegisterBody(values)
-
-    if (compareObject(registerBody, values)) {
-      toast({
-        variant: 'destructive',
-        title: 'Register failed',
-        description: 'Your values not change after register failed'
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'POST'
       })
 
-      return
-    }
+      if (!res.ok) {
+        throw await res.json()
+      }
 
-    try {
-      const result = (await register(values).unwrap()) as RegisterResType
+      const result: RegisterResType = await res.json()
 
       form.reset()
-
-      setRegisterBody(initalRegisterBody)
 
       toast({
         title: result.message
       })
     } catch (error: any) {
-      const errors = error.data.errors as { field: string; message: string }[]
+      const errors = error.errors as { field: string; message: string }[]
 
-      const status = error.status as number
+      const status = error.statusCode as number
 
       if (status === 422) {
         errors.forEach((err) => {

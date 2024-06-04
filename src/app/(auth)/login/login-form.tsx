@@ -1,14 +1,13 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { RegisterBody, LoginBodyType, LoginBody, LoginResType } from '@/schemaValidations/auth.shema'
+import { LoginBodyType, LoginBody, LoginResType } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
-import { useLoginMutation } from '@/lib/store/services/api/auth.api'
-import { compareObject } from '@/lib/utils'
+import envConfig from '@/config'
 
 const initalLoginBody = {
   email: '',
@@ -17,8 +16,6 @@ const initalLoginBody = {
 
 const LoginForm = () => {
   const { toast } = useToast()
-  const [login, { isLoading }] = useLoginMutation()
-  const [loginBody, setLoginBody] = useState<LoginBodyType>(initalLoginBody)
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -27,32 +24,30 @@ const LoginForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: LoginBodyType) {
-    setLoginBody(values)
-
-    if (compareObject(loginBody, values)) {
-      toast({
-        variant: 'destructive',
-        title: 'Login failed',
-        description: 'Your values not change after login failed'
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`, {
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'POST'
       })
 
-      return
-    }
+      if (!res.ok) {
+        throw await res.json()
+      }
 
-    try {
-      const result = (await login(values).unwrap()) as LoginResType
+      const result: LoginResType = await res.json()
 
       form.reset()
-
-      setLoginBody(initalLoginBody)
 
       toast({
         title: result.message
       })
     } catch (error: any) {
-      const errors = error.data.errors as { field: string; message: string }[]
+      const errors = error.errors as { field: string; message: string }[]
 
-      const status = error.status as number
+      const status = error.statusCode as number
 
       if (status === 422) {
         errors.forEach((err) => {
