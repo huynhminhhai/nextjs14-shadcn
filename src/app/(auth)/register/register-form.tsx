@@ -51,11 +51,24 @@ const RegisterForm = () => {
         description: result.message
       })
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Register failed',
-        description: error.data.errors[0].message
-      })
+      const errors = error.data.errors as { field: string; message: string }[]
+
+      const status = error.status as number
+
+      if (status === 422) {
+        errors.forEach((err) => {
+          form.setError(err.field as any, {
+            type: 'server',
+            message: err.message
+          })
+        })
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Register failed',
+          description: error.data.message
+        })
+      }
     }
   }
 
@@ -114,7 +127,9 @@ const RegisterForm = () => {
             </FormItem>
           )}
         />
-        <Button type='submit'>Submit</Button>
+        <Button style={{ marginTop: '1.5rem' }} type='submit'>
+          Submit
+        </Button>
       </form>
     </Form>
   )
