@@ -3,6 +3,7 @@ import './globals.css'
 import localFont from 'next/font/local'
 import { ThemeProvider } from '@/components/theme-provider'
 import Header from '@/components/header'
+import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {
   title: 'Next 14 - ShadCn UI',
@@ -49,8 +50,9 @@ export default function RootLayout({
       </head>
       <body className={myFont.className}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+          <Toaster />
           <Header />
-          {children}
+          <div className='px-12'>{children}</div>
         </ThemeProvider>
       </body>
     </html>

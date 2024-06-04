@@ -73,4 +73,9 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  h1 {
+    font-size: 38px;
+    margin-bottom: 24px;
+  }
 }
