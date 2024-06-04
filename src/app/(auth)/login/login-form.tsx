@@ -5,48 +5,46 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { RegisterBody, RegisterBodyType, RegisterResType } from '@/schemaValidations/auth.shema'
+import { RegisterBody, LoginBodyType, LoginBody, LoginResType } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
-import { useRegisterMutation } from '@/lib/store/services/api/auth.api'
+import { useLoginMutation } from '@/lib/store/services/api/auth.api'
 import { compareObject } from '@/lib/utils'
 
-const initalRegisterBody = {
-  name: '',
+const initalLoginBody = {
   email: '',
-  password: '',
-  confirmPassword: ''
+  password: ''
 }
 
-const RegisterForm = () => {
+const LoginForm = () => {
   const { toast } = useToast()
-  const [register, { isLoading }] = useRegisterMutation()
-  const [registerBody, setRegisterBody] = useState<RegisterBodyType>(initalRegisterBody)
+  const [login, { isLoading }] = useLoginMutation()
+  const [loginBody, setLoginBody] = useState<LoginBodyType>(initalLoginBody)
 
-  const form = useForm<RegisterBodyType>({
-    resolver: zodResolver(RegisterBody),
-    defaultValues: initalRegisterBody
+  const form = useForm<LoginBodyType>({
+    resolver: zodResolver(LoginBody),
+    defaultValues: initalLoginBody
   })
 
   // 2. Define a submit handler.
-  async function onSubmit(values: RegisterBodyType) {
-    setRegisterBody(values)
+  async function onSubmit(values: LoginBodyType) {
+    setLoginBody(values)
 
-    if (compareObject(registerBody, values)) {
+    if (compareObject(loginBody, values)) {
       toast({
         variant: 'destructive',
-        title: 'Register failed',
-        description: 'Your values not change after register failed'
+        title: 'Login failed',
+        description: 'Your values not change after login failed'
       })
 
       return
     }
 
     try {
-      const result = (await register(values).unwrap()) as RegisterResType
+      const result = (await login(values).unwrap()) as LoginResType
 
       form.reset()
 
-      setRegisterBody(initalRegisterBody)
+      setLoginBody(initalLoginBody)
 
       toast({
         title: result.message
@@ -66,7 +64,7 @@ const RegisterForm = () => {
       } else {
         toast({
           variant: 'destructive',
-          title: 'Register failed',
+          title: 'Login failed',
           description: error.data.message
         })
       }
@@ -76,19 +74,6 @@ const RegisterForm = () => {
   return (
     <Form {...form}>
       <form noValidate onSubmit={form.handleSubmit(onSubmit)} className='space-y-2 w-[400px] flex flex-col '>
-        <FormField
-          control={form.control}
-          name='name'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input type='text' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name='email'
@@ -115,19 +100,6 @@ const RegisterForm = () => {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name='confirmPassword'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
-              <FormControl>
-                <Input type='password' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <Button style={{ marginTop: '1.5rem' }} type='submit'>
           Submit
         </Button>
@@ -136,4 +108,4 @@ const RegisterForm = () => {
   )
 }
 
-export default RegisterForm
+export default LoginForm
