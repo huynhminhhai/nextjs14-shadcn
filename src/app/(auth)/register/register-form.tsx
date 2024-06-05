@@ -5,9 +5,11 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { RegisterBody, RegisterBodyType, RegisterResType } from '@/schemaValidations/auth.shema'
+import { RegisterBody, RegisterBodyType } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
-import envConfig from '@/config'
+import authApiRequest from '@/apiRequest/auth'
+import { useAppContext } from '@/app/AppProvider'
+import { useRouter } from 'next/navigation'
 
 const initalRegisterBody = {
   name: '',
@@ -18,7 +20,8 @@ const initalRegisterBody = {
 
 const RegisterForm = () => {
   const { toast } = useToast()
-
+  const { setSessionToken } = useAppContext()
+  const router = useRouter()
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
     defaultValues: initalRegisterBody
@@ -27,29 +30,23 @@ const RegisterForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: RegisterBodyType) {
     try {
-      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
-        body: JSON.stringify(values),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        method: 'POST'
-      })
-
-      if (!res.ok) {
-        throw await res.json()
-      }
-
-      const result: RegisterResType = await res.json()
+      const res = await authApiRequest.register(values)
 
       form.reset()
 
       toast({
-        title: result.message
+        title: res.payload.message
       })
-    } catch (error: any) {
-      const errors = error.errors as { field: string; message: string }[]
 
-      const status = error.statusCode as number
+      await authApiRequest.auth({ sessionToken: res.payload.data.token })
+
+      setSessionToken(res.payload.data.token)
+
+      router.push('/me')
+    } catch (error: any) {
+      const errors = error.payload.errors as { field: string; message: string }[]
+
+      const status = error.status as number
 
       if (status === 422) {
         errors.forEach((err) => {
@@ -61,8 +58,8 @@ const RegisterForm = () => {
       } else {
         toast({
           variant: 'destructive',
-          title: 'Register failed',
-          description: error.data.message
+          title: 'Login failed',
+          description: error.payload.message
         })
       }
     }

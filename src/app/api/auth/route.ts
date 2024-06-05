@@ -1,9 +1,9 @@
 import { LoginResType } from '@/schemaValidations/auth.shema'
 
 export async function POST(request: Request) {
-  const res = (await request.json()) as LoginResType
+  const res = await request.json()
 
-  const token = res?.data?.token
+  const token = res.sessionToken
 
   if (!token) {
     return Response.json(
@@ -14,16 +14,10 @@ export async function POST(request: Request) {
     )
   }
 
-  return Response.json(
-    {
-      message: 'Set-cookie success',
-      data: res.data
-    },
-    {
-      status: 200,
-      headers: {
-        'Set-Cookie': `sessionToken=${token}; Path=/; HttpOnly`
-      }
+  return Response.json(res, {
+    status: 200,
+    headers: {
+      'Set-Cookie': `sessionToken=${token}; Path=/; HttpOnly`
     }
-  )
+  })
 }

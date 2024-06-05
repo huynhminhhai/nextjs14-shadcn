@@ -5,10 +5,11 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { LoginBodyType, LoginBody, LoginResType } from '@/schemaValidations/auth.shema'
+import { LoginBodyType, LoginBody } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
-import envConfig from '@/config'
 import { useAppContext } from '@/app/AppProvider'
+import authApiRequest from '@/apiRequest/auth'
+import { useRouter } from 'next/navigation'
 
 const initalLoginBody = {
   email: '',
@@ -16,6 +17,7 @@ const initalLoginBody = {
 }
 
 const LoginForm = () => {
+  const router = useRouter()
   const { toast } = useToast()
   const { setSessionToken } = useAppContext()
   const form = useForm<LoginBodyType>({
@@ -26,40 +28,23 @@ const LoginForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: LoginBodyType) {
     try {
-      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`, {
-        body: JSON.stringify(values),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        method: 'POST'
-      })
-
-      if (!res.ok) {
-        throw await res.json()
-      }
-
-      const result: LoginResType = await res.json()
+      const res = await authApiRequest.login(values)
 
       form.reset()
 
       toast({
-        title: result.message
+        title: res.payload.message
       })
 
-      const resFromNextServer = await fetch('/api/auth', {
-        body: JSON.stringify(result),
-        method: 'POST'
-      }).then(async (res) => {
-        const data = (await res.json()) as LoginResType
+      await authApiRequest.auth({ sessionToken: res.payload.data.token })
 
-        return data
-      })
+      setSessionToken(res.payload.data.token)
 
-      setSessionToken(resFromNextServer.data.token)
+      router.push('/me')
     } catch (error: any) {
-      const errors = error.errors as { field: string; message: string }[]
+      const errors = error.payload.errors as { field: string; message: string }[]
 
-      const status = error.statusCode as number
+      const status = error.status as number
 
       if (status === 422) {
         errors.forEach((err) => {
@@ -72,7 +57,7 @@ const LoginForm = () => {
         toast({
           variant: 'destructive',
           title: 'Login failed',
-          description: error.data.message
+          description: error.payload.message
         })
       }
     }
