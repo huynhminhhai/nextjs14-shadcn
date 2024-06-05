@@ -22,5 +22,5 @@ const authPath = ['/login', '/register']
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: [...privatePath, ...authPath]
+  matcher: ['/login', '/register', '/me']
 }
