@@ -7,9 +7,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { LoginBodyType, LoginBody } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
-import { useAppContext } from '@/app/AppProvider'
 import authApiRequest from '@/apiRequest/auth'
 import { useRouter } from 'next/navigation'
+import { sessionToken } from '@/lib/http'
 
 const initalLoginBody = {
   email: '',
@@ -19,7 +19,6 @@ const initalLoginBody = {
 const LoginForm = () => {
   const router = useRouter()
   const { toast } = useToast()
-  const { setSessionToken } = useAppContext()
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: initalLoginBody
@@ -38,7 +37,7 @@ const LoginForm = () => {
 
       await authApiRequest.auth({ sessionToken: res.payload.data.token })
 
-      setSessionToken(res.payload.data.token)
+      sessionToken.value = res.payload.data.token
 
       router.push('/me')
     } catch (error: any) {

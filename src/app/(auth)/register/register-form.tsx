@@ -8,8 +8,8 @@ import { Input } from '@/components/ui/input'
 import { RegisterBody, RegisterBodyType } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
 import authApiRequest from '@/apiRequest/auth'
-import { useAppContext } from '@/app/AppProvider'
 import { useRouter } from 'next/navigation'
+import { sessionToken } from '@/lib/http'
 
 const initalRegisterBody = {
   name: '',
@@ -20,7 +20,6 @@ const initalRegisterBody = {
 
 const RegisterForm = () => {
   const { toast } = useToast()
-  const { setSessionToken } = useAppContext()
   const router = useRouter()
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
@@ -40,7 +39,7 @@ const RegisterForm = () => {
 
       await authApiRequest.auth({ sessionToken: res.payload.data.token })
 
-      setSessionToken(res.payload.data.token)
+      sessionToken.value = res.payload.data.token
 
       router.push('/me')
     } catch (error: any) {

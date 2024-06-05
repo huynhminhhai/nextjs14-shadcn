@@ -1,20 +1,18 @@
 'use client'
 import accountApiRequest from '@/apiRequest/account'
-import { useAppContext } from '@/app/AppProvider'
-import { AccountResType } from '@/schemaValidations/account.schema'
+import { sessionToken } from '@/lib/http'
 import React, { useEffect, useState } from 'react'
 
 const MePageClient = () => {
-  const { sessionToken } = useAppContext()
   const [user, setUser] = useState<any>(undefined)
 
   useEffect(() => {
     fetchMeApi()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionToken])
+  }, [])
 
   const fetchMeApi = async () => {
-    const res = await accountApiRequest.me(sessionToken)
+    const res = await accountApiRequest.me(sessionToken.value)
 
     setUser(res)
   }
