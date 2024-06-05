@@ -5,6 +5,8 @@ import { ThemeProvider } from '@/components/theme-provider'
 import Header from '@/components/header'
 import { Toaster } from '@/components/ui/toaster'
 import { ReduxProvider } from '@/lib/store/Provider'
+import AppProvider from '@/app/AppProvider'
+import { cookies } from 'next/headers'
 
 export const metadata: Metadata = {
   title: 'Next 14 - ShadCn UI',
@@ -51,11 +53,13 @@ export default function RootLayout({
       </head>
       <body className={myFont.className}>
         <ReduxProvider>
-          <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-            <Toaster />
-            <Header />
-            <div className='px-12'>{children}</div>
-          </ThemeProvider>
+          <AppProvider initialSessionToken={cookies().get('sessionToken')?.value}>
+            <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+              <Toaster />
+              <Header />
+              <div className='px-12'>{children}</div>
+            </ThemeProvider>
+          </AppProvider>
         </ReduxProvider>
       </body>
     </html>

@@ -15,7 +15,10 @@ export async function POST(request: Request) {
   }
 
   return Response.json(
-    { res },
+    {
+      message: 'Set-cookie success',
+      data: res.data
+    },
     {
       status: 200,
       headers: {
