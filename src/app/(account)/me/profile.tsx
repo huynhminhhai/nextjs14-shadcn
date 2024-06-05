@@ -1,6 +1,5 @@
 'use client'
 import accountApiRequest from '@/apiRequest/account'
-import { sessionToken } from '@/lib/http'
 import React, { useEffect, useState } from 'react'
 
 const MePageClient = () => {
@@ -12,7 +11,7 @@ const MePageClient = () => {
   }, [])
 
   const fetchMeApi = async () => {
-    const res = await accountApiRequest.me(sessionToken.value)
+    const res = await accountApiRequest.meClient()
 
     setUser(res)
   }

@@ -1,6 +1,7 @@
 import envConfig from '@/config'
+import { LoginResType } from '@/schemaValidations/auth.shema'
 
-class SessionToken {
+class ClientSessionToken {
   private token = ''
 
   get value() {
@@ -9,7 +10,7 @@ class SessionToken {
 
   set value(token: string) {
     // Nếu gọi method này ở server thì sẽ bị lỗi
-    if (typeof window === undefined) {
+    if (typeof window === 'undefined') {
       throw new Error('Cannot set token on server side')
     }
 
@@ -17,9 +18,9 @@ class SessionToken {
   }
 }
 
-export const sessionToken = new SessionToken()
+export const clientSessionToken = new ClientSessionToken()
 
-type CustomOptions = RequestInit & { baseUrl?: string | undefined }
+type CustomOptions = Omit<RequestInit, 'method'> & { baseUrl?: string | undefined }
 
 // HTTP ERROR
 class HttpError extends Error {
@@ -41,7 +42,8 @@ const request = async <IResType>(
   const body = options?.body ? JSON.stringify(options?.body) : undefined
 
   const baseHeaders = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    Authorization: clientSessionToken.value ? `Bearer ${clientSessionToken.value}` : ''
   }
 
   // Nếu không truyền baseUrl (hoặc baseUrl === undefined) thì lấy từ envConfig.NEXT_PUBLIC_API_ENDPOINT
@@ -70,6 +72,12 @@ const request = async <IResType>(
 
   if (!res.ok) {
     throw new HttpError(data)
+  }
+
+  if (['/auth/loign', '/auth/register'].includes(url)) {
+    clientSessionToken.value = (payload as LoginResType).data.token
+  } else if (['/auth/logout'].includes(url)) {
+    clientSessionToken.value = ''
   }
 
   return data

@@ -1,5 +1,5 @@
 'use client'
-import { sessionToken } from '@/lib/http'
+import { clientSessionToken } from '@/lib/http'
 import { useState } from 'react'
 
 export default function AppProvider({
@@ -10,7 +10,9 @@ export default function AppProvider({
   initialSessionToken?: string
 }) {
   useState(() => {
-    sessionToken.value = initialSessionToken
+    if (typeof window !== 'undefined') {
+      clientSessionToken.value = initialSessionToken
+    }
   })
 
   return <>{children}</>

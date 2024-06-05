@@ -9,7 +9,6 @@ import { LoginBodyType, LoginBody } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
 import authApiRequest from '@/apiRequest/auth'
 import { useRouter } from 'next/navigation'
-import { sessionToken } from '@/lib/http'
 
 const initalLoginBody = {
   email: '',
@@ -36,8 +35,6 @@ const LoginForm = () => {
       })
 
       await authApiRequest.auth({ sessionToken: res.payload.data.token })
-
-      sessionToken.value = res.payload.data.token
 
       router.push('/me')
     } catch (error: any) {
