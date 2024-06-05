@@ -44,6 +44,11 @@ const LoginForm = () => {
       toast({
         title: result.message
       })
+
+      await fetch('/api/auth', {
+        body: JSON.stringify(result),
+        method: 'POST'
+      })
     } catch (error: any) {
       const errors = error.errors as { field: string; message: string }[]
 

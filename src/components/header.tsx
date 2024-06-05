@@ -1,3 +1,4 @@
+import AvatarProfile from '@/components/avatar'
 import { ModeToggle } from '@/components/toggle-theme'
 import Link from 'next/link'
 import React from 'react'
@@ -13,9 +14,12 @@ const Header = () => {
           <Link href={'/register'}>Register</Link>
         </li>
       </ul>
-      <ul>
+      <ul className='flex items-center gap-6'>
         <li>
           <ModeToggle />
+        </li>
+        <li>
+          <AvatarProfile />
         </li>
       </ul>
     </div>
