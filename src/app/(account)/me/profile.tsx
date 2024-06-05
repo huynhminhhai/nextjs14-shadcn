@@ -3,10 +3,11 @@ import { useAppContext } from '@/app/AppProvider'
 import envConfig from '@/config'
 import { AccountResType } from '@/schemaValidations/account.schema'
 import { redirect } from 'next/navigation'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const MePageClient = () => {
   const { sessionToken } = useAppContext()
+  const [user, setUser] = useState<AccountResType | undefined>(undefined)
 
   useEffect(() => {
     fetchMeApi()
@@ -28,10 +29,10 @@ const MePageClient = () => {
       return result
     })
 
-    console.log(res)
+    setUser(res)
   }
 
-  return <div>MePageClient</div>
+  return <div>Welcome to client, {user?.data.name}</div>
 }
 
 export default MePageClient

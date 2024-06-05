@@ -1,4 +1,4 @@
-import MePageClient from '@/app/me/profile'
+import MePageClient from '@/app/(account)/me/profile'
 import envConfig from '@/config'
 import { AccountResType } from '@/schemaValidations/account.schema'
 import { cookies } from 'next/headers'
