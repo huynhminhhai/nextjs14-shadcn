@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
@@ -19,6 +19,7 @@ const initalRegisterBody = {
 }
 
 const RegisterForm = () => {
+  const [isloading, setIsLoading] = useState<boolean>(false)
   const { toast } = useToast()
   const router = useRouter()
   const form = useForm<RegisterBodyType>({
@@ -28,6 +29,7 @@ const RegisterForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: RegisterBodyType) {
+    setIsLoading(true)
     try {
       const res = await authApiRequest.register(values)
 
@@ -46,6 +48,8 @@ const RegisterForm = () => {
         setError: form.setError,
         titleToast: 'Register Failed'
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -104,7 +108,7 @@ const RegisterForm = () => {
             </FormItem>
           )}
         />
-        <Button style={{ marginTop: '1.5rem' }} type='submit'>
+        <Button style={{ marginTop: '1.5rem' }} type='submit' disabled={isloading}>
           Submit
         </Button>
       </form>

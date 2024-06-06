@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ const initalLoginBody = {
 }
 
 const LoginForm = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
   const { toast } = useToast()
   const form = useForm<LoginBodyType>({
@@ -26,6 +27,7 @@ const LoginForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: LoginBodyType) {
+    setIsLoading(true)
     try {
       const res = await authApiRequest.login(values)
 
@@ -44,6 +46,8 @@ const LoginForm = () => {
         setError: form.setError,
         titleToast: 'Login Failed'
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -76,7 +80,7 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
-        <Button style={{ marginTop: '1.5rem' }} type='submit'>
+        <Button style={{ marginTop: '1.5rem' }} type='submit' disabled={isLoading}>
           Submit
         </Button>
       </form>
