@@ -9,6 +9,7 @@ import { LoginBodyType, LoginBody } from '@/schemaValidations/auth.shema'
 import { useToast } from '@/components/ui/use-toast'
 import authApiRequest from '@/apiRequest/auth'
 import { useRouter } from 'next/navigation'
+import { handleErrorApi } from '@/lib/utils'
 
 const initalLoginBody = {
   email: '',
@@ -38,24 +39,11 @@ const LoginForm = () => {
 
       router.push('/me')
     } catch (error: any) {
-      const errors = error.payload.errors as { field: string; message: string }[]
-
-      const status = error.status as number
-
-      if (status === 422) {
-        errors.forEach((err) => {
-          form.setError(err.field as any, {
-            type: 'server',
-            message: err.message
-          })
-        })
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Login failed',
-          description: error.payload.message
-        })
-      }
+      handleErrorApi({
+        error,
+        setError: form.setError,
+        titleToast: 'Login Failed'
+      })
     }
   }
 

@@ -1,6 +1,8 @@
 import envConfig from '@/config'
 import { LoginResType } from '@/schemaValidations/auth.shema'
 
+const ENTITY_ERROR_STATUS = 422
+
 class ClientSessionToken {
   private token = ''
 
@@ -23,12 +25,35 @@ export const clientSessionToken = new ClientSessionToken()
 type CustomOptions = Omit<RequestInit, 'method'> & { baseUrl?: string | undefined }
 
 // HTTP ERROR
-class HttpError extends Error {
+export class HttpError extends Error {
   status: number
-  payload: any
+  payload: {
+    message: string
+    [key: string]: any
+  }
 
   constructor({ status, payload }: { status: number; payload: any }) {
     super('Http Error')
+    this.status = status
+    this.payload = payload
+  }
+}
+
+// ENTITY ERROR
+type EntityErrorPayload = {
+  message: string
+  errors: {
+    field: string
+    message: string
+  }[]
+}
+
+export class EntityError extends HttpError {
+  status: number
+  payload: EntityErrorPayload
+
+  constructor({ status, payload }: { status: 422; payload: EntityErrorPayload }) {
+    super({ status, payload })
     this.status = status
     this.payload = payload
   }
@@ -71,10 +96,14 @@ const request = async <IResType>(
   }
 
   if (!res.ok) {
-    throw new HttpError(data)
+    if (res.status === ENTITY_ERROR_STATUS) {
+      throw new EntityError(data as { status: 422; payload: EntityErrorPayload })
+    } else {
+      throw new HttpError(data)
+    }
   }
 
-  if (['/auth/loign', '/auth/register'].includes(url)) {
+  if (['/auth/login', '/auth/register'].includes(url)) {
     clientSessionToken.value = (payload as LoginResType).data.token
   } else if (['/auth/logout'].includes(url)) {
     clientSessionToken.value = ''
