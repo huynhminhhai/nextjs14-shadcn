@@ -42,6 +42,7 @@ const RegisterForm = () => {
       await authApiRequest.auth({ sessionToken: res.payload.data.token })
 
       router.push('/me')
+      router.refresh()
     } catch (error: any) {
       handleErrorApi({
         error,

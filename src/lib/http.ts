@@ -98,8 +98,12 @@ const request = async <IResType>(
 
   if (!res.ok) {
     if (res.status === ENTITY_ERROR_STATUS) {
+      console.log('url-error: ', url)
+      console.log('error-entity: ', data)
       throw new EntityError(data as { status: 422; payload: EntityErrorPayload })
     } else {
+      console.log('url-error: ', url)
+      console.log('error-http: ', data)
       throw new HttpError(data)
     }
   }

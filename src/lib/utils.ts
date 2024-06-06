@@ -31,8 +31,8 @@ export const handleErrorApi = ({
   titleToast
 }: {
   error: any
-  setError: UseFormSetError<any>
-  titleToast: string
+  setError?: UseFormSetError<any>
+  titleToast?: string
 }) => {
   if (error instanceof EntityError && setError) {
     error.payload.errors.forEach((item) => {
@@ -45,7 +45,7 @@ export const handleErrorApi = ({
     toast({
       variant: 'destructive',
       title: titleToast,
-      description: error.payload.message || 'Unknown error'
+      description: error?.payload?.message || 'Unknown error'
     })
   }
 }
