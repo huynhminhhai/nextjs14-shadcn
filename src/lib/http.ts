@@ -108,10 +108,12 @@ const request = async <IResType>(
     }
   }
 
+  console.log(url)
+
   if (typeof window !== 'undefined') {
     if (['auth/login', 'auth/register'].some((item) => item === normalizePath(url))) {
       clientSessionToken.value = (payload as LoginResType).data.token
-    } else if ('auth/logout' === normalizePath(url)) {
+    } else if (['auth/logout', 'api/auth/logout'].some((item) => item === normalizePath(url))) {
       clientSessionToken.value = ''
     }
   }
