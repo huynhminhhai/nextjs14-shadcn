@@ -1,8 +1,10 @@
 import envConfig from '@/config'
 import { normalizePath } from '@/lib/utils'
 import { LoginResType } from '@/schemaValidations/auth.shema'
+import { redirect } from 'next/navigation'
 
 const ENTITY_ERROR_STATUS = 422
+const AUTHENTICATION_ERROR_STATUS = 401
 
 class ClientSessionToken {
   private token = ''
@@ -101,14 +103,27 @@ const request = async <IResType>(
       console.log('url-error: ', url)
       console.log('error-entity: ', data)
       throw new EntityError(data as { status: 422; payload: EntityErrorPayload })
+    } else if (res.status === AUTHENTICATION_ERROR_STATUS) {
+      if (typeof window !== 'undefined') {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          body: JSON.stringify({ force: true }),
+          headers: {
+            ...baseHeaders
+          }
+        })
+        clientSessionToken.value = ''
+        location.href = '/login'
+      } else {
+        const sessionToken = (options?.headers as any).Authorization.split('Bearer ')[1]
+        redirect(`/logout?sessionToken=${sessionToken}`)
+      }
     } else {
       console.log('url-error: ', url)
       console.log('error-http: ', data)
       throw new HttpError(data)
     }
   }
-
-  console.log(url)
 
   if (typeof window !== 'undefined') {
     if (['auth/login', 'auth/register'].some((item) => item === normalizePath(url))) {

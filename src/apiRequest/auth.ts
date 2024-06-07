@@ -3,14 +3,19 @@ import { LoginBodyType, LoginResType, RegisterBodyType, RegisterResType } from '
 import { MessageResType } from '@/schemaValidations/common.schema'
 
 const authApiRequest = {
-  login: (body: LoginBodyType) => http.post<LoginResType>('/auth/login', body),
-  register: (body: RegisterBodyType) => http.post<RegisterResType>('/auth/register', body),
-  auth: (body: { sessionToken: string }) =>
-    http.post('/api/auth', body, {
+  login: (body: LoginBodyType) => {
+    return http.post<LoginResType>('/auth/login', body)
+  },
+  register: (body: RegisterBodyType) => {
+    return http.post<RegisterResType>('/auth/register', body)
+  },
+  auth: (body: { sessionToken: string }) => {
+    return http.post('/api/auth', body, {
       baseUrl: ''
-    }),
-  logoutFromNextServerToServer: (sessionToken: string) =>
-    http.post<MessageResType>(
+    })
+  },
+  logoutFromNextServerToServer: (sessionToken: string) => {
+    return http.post<MessageResType>(
       '/auth/logout',
       {},
       {
@@ -18,15 +23,18 @@ const authApiRequest = {
           Authorization: `Bearer ${sessionToken}`
         }
       }
-    ),
-  logoutFromNextClientToNextServer: () => {
-    http.post<MessageResType>(
-      '/api/auth/logout',
-      {},
-      {
-        baseUrl: ''
-      }
     )
+  },
+  logoutFromNextClientToNextServer: (force?: boolean | undefined) => {
+    {
+      return http.post<MessageResType>(
+        '/api/auth/logout',
+        { force },
+        {
+          baseUrl: ''
+        }
+      )
+    }
   }
 }
 
