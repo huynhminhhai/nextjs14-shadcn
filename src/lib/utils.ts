@@ -1,6 +1,7 @@
 import { toast } from '@/components/ui/use-toast'
 import { EntityError, HttpError } from '@/lib/http'
 import { type ClassValue, clsx } from 'clsx'
+import { decode } from 'jsonwebtoken'
 import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 
@@ -55,4 +56,11 @@ export const handleErrorApi = ({
  */
 export const normalizePath = (path: string) => {
   return path.startsWith('/') ? path.slice(1) : path
+}
+
+/**
+ * decode JWT
+ */
+export const decodeJWT = <Payload = any>(token: string) => {
+  return decode(token) as Payload
 }
