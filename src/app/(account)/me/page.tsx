@@ -1,5 +1,6 @@
 import accountApiRequest from '@/apiRequest/account'
 import MePageClient from '@/app/(account)/me/profile'
+import ProfileForm from '@/app/(account)/me/profile-form'
 import { cookies } from 'next/headers'
 import React from 'react'
 
@@ -10,8 +11,7 @@ const MePage = async () => {
 
   return (
     <div>
-      Wellcome, {res.payload.data.name}
-      <MePageClient />
+      <ProfileForm profile={res.payload.data} />
     </div>
   )
 }

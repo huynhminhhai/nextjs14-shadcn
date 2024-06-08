@@ -47,10 +47,7 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <head>
-        <link rel='preconnect' href='https://fonts.googleapis.com' />
-        <link rel='preconnect' href='https://fonts.gstatic.com' />
         <link rel='icon' href='https://avatarfiles.alphacoders.com/300/thumb-1920-300266.png' sizes='any' />
-        <link href='https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap' rel='stylesheet' />
       </head>
       <body className={myFont.className}>
         <ReduxProvider>
