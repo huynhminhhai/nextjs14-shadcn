@@ -9,7 +9,7 @@ const authApiRequest = {
   register: (body: RegisterBodyType) => {
     return http.post<RegisterResType>('/auth/register', body)
   },
-  auth: (body: { sessionToken: string }) => {
+  auth: (body: { sessionToken: string; expiresAt: string }) => {
     return http.post('/api/auth', body, {
       baseUrl: ''
     })

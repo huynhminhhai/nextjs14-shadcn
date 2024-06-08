@@ -39,7 +39,7 @@ const RegisterForm = () => {
         title: res.payload.message
       })
 
-      await authApiRequest.auth({ sessionToken: res.payload.data.token })
+      await authApiRequest.auth({ sessionToken: res.payload.data.token, expiresAt: res.payload.data.expiresAt })
 
       router.push('/me')
       router.refresh()

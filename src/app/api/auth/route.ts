@@ -1,16 +1,8 @@
-import { decodeJWT } from '@/lib/utils'
-
-type JwtType = {
-  iat: number
-  exp: number
-  tokenType: string
-  userId: number
-}
-
 export async function POST(request: Request) {
   const res = await request.json()
 
   const token = res.sessionToken
+  const expiresAt = res.expiresAt as string
 
   if (!token) {
     return Response.json(
@@ -21,8 +13,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const payloadJWT = decodeJWT<JwtType>(token)
-  const expiredJWT = new Date(payloadJWT.exp * 1000).toUTCString()
+  const expiredJWT = new Date(expiresAt).toUTCString()
 
   return Response.json(res, {
     status: 200,
