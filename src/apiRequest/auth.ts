@@ -1,5 +1,11 @@
 import http from '@/lib/http'
-import { LoginBodyType, LoginResType, RegisterBodyType, RegisterResType } from '@/schemaValidations/auth.shema'
+import {
+  LoginBodyType,
+  LoginResType,
+  RegisterBodyType,
+  RegisterResType,
+  SlideSessionResType
+} from '@/schemaValidations/auth.shema'
 import { MessageResType } from '@/schemaValidations/common.schema'
 
 const authApiRequest = {
@@ -35,6 +41,20 @@ const authApiRequest = {
         }
       )
     }
+  },
+  slideSessionFromClientToNextServer: () => {
+    return http.post<SlideSessionResType>('/api/auth/slide-session', {}, { baseUrl: '' })
+  },
+  slideSessionFromNextServerToServer: (sessionToken: string) => {
+    return http.post<SlideSessionResType>(
+      '/auth/slide-session',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`
+        }
+      }
+    )
   }
 }
 

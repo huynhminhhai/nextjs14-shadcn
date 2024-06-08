@@ -8,6 +8,7 @@ const AUTHENTICATION_ERROR_STATUS = 401
 
 class ClientSessionToken {
   private token = ''
+  private _expiresAt = new Date().toISOString()
 
   get value() {
     return this.token
@@ -20,6 +21,18 @@ class ClientSessionToken {
     }
 
     this.token = token
+  }
+
+  get expiresAt() {
+    return this._expiresAt
+  }
+
+  set expiresAt(expiresAt: string) {
+    if (typeof window === 'undefined') {
+      throw new Error('Cannot set expiresAt token on server side')
+    }
+
+    this._expiresAt = expiresAt
   }
 }
 
@@ -113,6 +126,7 @@ const request = async <IResType>(
           }
         })
         clientSessionToken.value = ''
+        clientSessionToken.expiresAt = new Date().toISOString()
         location.href = '/login'
       } else {
         const sessionToken = (options?.headers as any).Authorization.split('Bearer ')[1]
@@ -128,8 +142,10 @@ const request = async <IResType>(
   if (typeof window !== 'undefined') {
     if (['auth/login', 'auth/register'].some((item) => item === normalizePath(url))) {
       clientSessionToken.value = (payload as LoginResType).data.token
+      clientSessionToken.expiresAt = (payload as LoginResType).data.expiresAt
     } else if (['auth/logout', 'api/auth/logout'].some((item) => item === normalizePath(url))) {
       clientSessionToken.value = ''
+      clientSessionToken.expiresAt = new Date().toISOString()
     }
   }
 
