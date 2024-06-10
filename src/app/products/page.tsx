@@ -26,7 +26,9 @@ const ProductListPage = async () => {
             </div>
             <div className='flex flex-col gap-6'>
               <Button variant='destructive'>Delete</Button>
-              <Button variant='outline'>Edit</Button>
+              <Button>
+                <Link href={`/products/${product.id}`}>Edit</Link>
+              </Button>
             </div>
           </div>
         ))}

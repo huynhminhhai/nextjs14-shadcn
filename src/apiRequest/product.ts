@@ -5,6 +5,9 @@ const productApiRequest = {
   getList: () => {
     return http.get<ProductListResType>('/products')
   },
+  getDetail: (id: number) => {
+    return http.get<ProductResType>(`/products/${id}`)
+  },
   create: (body: CreateProductBodyType) => {
     return http.post<ProductResType>('/products', body)
   },
