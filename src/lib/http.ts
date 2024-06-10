@@ -171,8 +171,8 @@ const http = {
   put<IResType>(url: string, body: any, options?: Omit<CustomOptions, 'body'> | undefined) {
     return request<IResType>('PUT', url, { ...options, body })
   },
-  delete<IResType>(url: string, body: any, options?: Omit<CustomOptions, 'body'> | undefined) {
-    return request<IResType>('DELETE', url, { ...options, body })
+  delete<IResType>(url: string, options?: Omit<CustomOptions, 'body'> | undefined) {
+    return request<IResType>('DELETE', url, options)
   }
 }
 

@@ -1,4 +1,5 @@
 import productApiRequest from '@/apiRequest/product'
+import DeleteProduct from '@/app/products/_components/delete-product'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -25,7 +26,7 @@ const ProductListPage = async () => {
               <div>Desc: {product.description}</div>
             </div>
             <div className='flex flex-col gap-6'>
-              <Button variant='destructive'>Delete</Button>
+              <DeleteProduct product={product} />
               <Button>
                 <Link href={`/products/${product.id}`}>Edit</Link>
               </Button>
