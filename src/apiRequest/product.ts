@@ -2,7 +2,7 @@ import http from '@/lib/http'
 import { CreateProductBodyType, ProductListResType, ProductResType } from '@/schemaValidations/product.schema'
 
 const productApiRequest = {
-  get: () => {
+  getList: () => {
     return http.get<ProductListResType>('/products')
   },
   create: (body: CreateProductBodyType) => {
