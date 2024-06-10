@@ -1,4 +1,5 @@
 import productApiRequest from '@/apiRequest/product'
+import AddProductForm from '@/app/products/_components/add-form'
 import React from 'react'
 
 const ProductEditPage = async ({ params }: { params: { id: string } }) => {
@@ -12,11 +13,7 @@ const ProductEditPage = async ({ params }: { params: { id: string } }) => {
   return (
     <div>
       {!product && <>Can not find product</>}
-      {product && (
-        <div>
-          <div>{product.name}</div>
-        </div>
-      )}
+      {product && <AddProductForm product={product} />}
     </div>
   )
 }
